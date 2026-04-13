@@ -20,7 +20,7 @@ public class MetaFinanceira {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	private String descricao;
 	
 	@Column(nullable = false)
@@ -34,7 +34,7 @@ public class MetaFinanceira {
     private Instant data_final;
 	
 	@ManyToOne
-    @JoinColumn(name = "usuario_id") // Nome da coluna no SQLite
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 	
 	public MetaFinanceira() {}

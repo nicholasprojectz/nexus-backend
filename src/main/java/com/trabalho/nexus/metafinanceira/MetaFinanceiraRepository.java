@@ -10,6 +10,8 @@ import com.trabalho.nexus.usuario.Usuario;
 public interface MetaFinanceiraRepository extends JpaRepository<MetaFinanceira, Long>{
 	List<MetaFinanceira> findAllByUsuario(Usuario usuario);
     
-    // Busca uma meta específica pelo ID, mas exige que ela pertença a este usuário
+  
     Optional<MetaFinanceira> findByIdAndUsuario(Long id, Usuario usuario);
+    
+    boolean existsByUsuarioAndDescricao(Usuario usuario, String descricao);
 }

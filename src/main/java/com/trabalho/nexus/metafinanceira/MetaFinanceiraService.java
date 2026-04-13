@@ -2,11 +2,15 @@ package com.trabalho.nexus.metafinanceira;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.trabalho.nexus.usuario.Usuario;
 import com.trabalho.nexus.usuario.UsuarioRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class MetaFinanceiraService {
@@ -19,28 +23,16 @@ public class MetaFinanceiraService {
         this.usuarioRepository = usuarioRepository;
     }
 
-
-    private Usuario getUsuarioLogado() {
-        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
-        return usuarioRepository.findByEmail(emailLogado)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
-    }
-
-    // --- 1. CREATE (Criar) ---
-    public MetaFinanceiraResponseDTO criar(MetaFinanceiraRequestDTO dados) {
+    
+    public MetaFinanceiraResponseDTO buscarPorId(Long id) {
         Usuario usuario = getUsuarioLogado();
-
-        MetaFinanceira novaMeta = new MetaFinanceira();
-        novaMeta.setDescricao(dados.descricao());
-        novaMeta.setValor_meta(dados.valorMeta());
-        novaMeta.setData_inicial(dados.dataInicial());
-        novaMeta.setData_final(dados.dataFinal());
-        novaMeta.setUsuario(usuario);
-
-        MetaFinanceira salva = repository.save(novaMeta);
-        return converterParaDTO(salva);
+        
+        MetaFinanceira meta = repository.findByIdAndUsuario(id, usuario)
+                .orElseThrow(() -> new RuntimeException("Meta não encontrada ou acesso negado."));
+                
+        return converterParaDTO(meta);
     }
-
+    
     public List<MetaFinanceiraResponseDTO> listarTodas() {
         Usuario usuario = getUsuarioLogado();
         
@@ -51,15 +43,28 @@ public class MetaFinanceiraService {
                 .toList();
     }
 
-    public MetaFinanceiraResponseDTO buscarPorId(Long id) {
+    @Transactional
+    public MetaFinanceiraResponseDTO criar(MetaFinanceiraRequestDTO dados) {
         Usuario usuario = getUsuarioLogado();
+
+        MetaFinanceira novaMeta = new MetaFinanceira();
+        novaMeta.setDescricao(dados.descricao());
+        novaMeta.setValor_meta(dados.valorMeta());
+        novaMeta.setData_inicial(dados.dataInicial());
+        novaMeta.setData_final(dados.dataFinal());
+        novaMeta.setUsuario(usuario);
+
+        if (repository.existsByUsuarioAndDescricao(usuario, dados.descricao())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Você já possui uma meta financeira cadastrada com a descrição: " + dados.descricao());
+        }
         
-        MetaFinanceira meta = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Meta não encontrada ou acesso negado."));
-                
-        return converterParaDTO(meta);
+        MetaFinanceira salva = repository.save(novaMeta);
+        return converterParaDTO(salva);
     }
 
+   
+    @Transactional
     public MetaFinanceiraResponseDTO atualizar(Long id, MetaFinanceiraRequestDTO dados) {
         Usuario usuario = getUsuarioLogado();
         
@@ -75,7 +80,7 @@ public class MetaFinanceiraService {
         
         return converterParaDTO(metaAtualizada);
     }
-
+    @Transactional
     public void deletar(Long id) {
         Usuario usuario = getUsuarioLogado();
         
@@ -87,12 +92,18 @@ public class MetaFinanceiraService {
 
     private MetaFinanceiraResponseDTO converterParaDTO(MetaFinanceira meta) {
         return new MetaFinanceiraResponseDTO(
-            meta.getId(), // AQUI: Extraímos o ID real da entidade salva
+            meta.getId(),
             meta.getDescricao(),
             meta.getValor_meta(), 
             meta.getData_inicial(),
             meta.getData_final(),
             meta.getUsuario().getId()
         );
+    }
+
+    private Usuario getUsuarioLogado() {
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        return usuarioRepository.findByEmail(emailLogado)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 }

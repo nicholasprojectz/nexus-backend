@@ -33,7 +33,7 @@ public class AuthService {
         this.repository.save(novoUsuario);
 
         String token = jwtService.generateToken(novoUsuario.getEmail(), "ROLE_USER");
-        return new TokenResponseDTO(token);
+        return new TokenResponseDTO(token, novoUsuario.getNome());
     }
 
     public TokenResponseDTO logar(LoginRequestDTO data) {
@@ -51,6 +51,6 @@ public class AuthService {
 
         // 4. Se chegou aqui, está validado. Geramos o token.
         String token = jwtService.generateToken(usuario.getEmail(), "ROLE_USER");
-        return new TokenResponseDTO(token);
+        return new TokenResponseDTO(token, usuario.getNome());
     }
 }

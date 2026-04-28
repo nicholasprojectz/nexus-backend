@@ -19,7 +19,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    // Injeção de dependência via construtor (Melhor prática em relação ao @Autowired)
     public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
@@ -28,13 +27,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // 1. Volta a ler o Header Authorization
         final String authHeader = request.getHeader("Authorization");
 
+        // 2. Se não tem o header ou não começa com Bearer, ignora e segue a vida
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 3. Extrai o token cortando a palavra "Bearer " (7 caracteres)
         final String jwt = authHeader.substring(7);
         final String username;
         final String role;
@@ -43,13 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(jwt);
             role = jwtService.extractRole(jwt);
         } catch (Exception e) {
-            // Token expirado ou malformado. Segue o fluxo sem autenticar (resultará em 403)
             filterChain.doFilter(request, response);
             return;
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            
             if (jwtService.isTokenValid(jwt, username)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         username,

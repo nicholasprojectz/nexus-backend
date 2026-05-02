@@ -11,49 +11,49 @@ import com.trabalho.nexus.usuario.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
 
-@Service	
+@Service    
 public class CategoriaService {
 
     private final CategoriaRepository repo;
     private final UsuarioRepository usuarioRepository;
+    private final CategoriaValidator validator; // Injetando o validador
 
-    public CategoriaService(CategoriaRepository repo, UsuarioRepository usuarioRepository) {
+    public CategoriaService(CategoriaRepository repo, UsuarioRepository usuarioRepository, CategoriaValidator validator) {
         this.repo = repo;
         this.usuarioRepository = usuarioRepository;
+        this.validator = validator;
     }
     
-
     public CategoriaResponseDTO buscarPorId(Long id) {
-        Usuario usuario = getUsuarioLogado();
+        Usuario usuario = getUsuarioLogado(); // Busca o usuário apenas na hora da requisição
         
         Categoria cat = repo.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
         
-        return converterParaDTO(cat);		
+        return converterParaDTO(cat);       
     }
     
     public List<CategoriaResponseDTO> listarTodas() {
-        Usuario usuario = getUsuarioLogado();
+        Usuario usuario = getUsuarioLogado(); 
         
         List<Categoria> categorias = repo.findAllByUsuario(usuario);
         
         return categorias.stream()
                 .map(this::converterParaDTO)
-                .toList();		
+                .toList();      
     }
 
     @Transactional
     public CategoriaResponseDTO criar(CategoriaRequestDTO dados) {
-        Usuario usuario = getUsuarioLogado();
+        Usuario usuario = getUsuarioLogado(); 
 
-        if (repo.existsByUsuarioAndDescricao(usuario, dados.descricao())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria já existente.");
-        }
+        // Repassa o usuário e os dados para a validação
+        validator.validarCriacao(dados, usuario);
 
         Categoria novaCategoria = new Categoria();
         novaCategoria.setDescricao(dados.descricao());
         novaCategoria.setUsuario(usuario);
-        
+
         Categoria salva = repo.save(novaCategoria);
         
         return converterParaDTO(salva);
@@ -61,15 +61,13 @@ public class CategoriaService {
     
     @Transactional
     public CategoriaResponseDTO atualizar(Long id, CategoriaRequestDTO dados) {
-        Usuario usuario = getUsuarioLogado();
+        Usuario usuario = getUsuarioLogado(); 
         
         Categoria categoriaExistente = repo.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
-        
-        if (!categoriaExistente.getDescricao().equals(dados.descricao()) && 
-            repo.existsByUsuarioAndDescricao(usuario, dados.descricao())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Você já tem uma categoria com este nome.");
-        }
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
+
+        // Repassa o usuário, a entidade antiga e os dados novos para a validação
+        validator.validarAtualizacao(categoriaExistente, dados, usuario);
 
         categoriaExistente.setDescricao(dados.descricao());
         
@@ -80,20 +78,19 @@ public class CategoriaService {
     
     @Transactional
     public void deletar(Long id) {
-        Usuario usuario = getUsuarioLogado();
+        Usuario usuario = getUsuarioLogado(); 
         
         Categoria categoria = repo.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
-        
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
+
         repo.delete(categoria);
     }
     
-
     private CategoriaResponseDTO converterParaDTO(Categoria cat) {
         return new CategoriaResponseDTO(
             cat.getId(),
             cat.getDescricao(),
-            cat.getUsuario()
+            cat.getUsuario().getId()
         );
     }
 

@@ -17,10 +17,13 @@ public class MetaFinanceiraService {
 	
     private final MetaFinanceiraRepository repository;
     private final UsuarioRepository usuarioRepository;
+    private final MetaValidator metaValidator;
     
-    public MetaFinanceiraService(MetaFinanceiraRepository repository, UsuarioRepository usuarioRepository) {
+    public MetaFinanceiraService(MetaFinanceiraRepository repository, UsuarioRepository usuarioRepository,
+    MetaValidator val) {
     	this.repository = repository;
         this.usuarioRepository = usuarioRepository;
+        this.metaValidator = val;
     }
 
     
@@ -54,10 +57,7 @@ public class MetaFinanceiraService {
         novaMeta.setData_final(dados.dataFinal());
         novaMeta.setUsuario(usuario);
 
-        if (repository.existsByUsuarioAndDescricao(usuario, dados.descricao())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                "Você já possui uma meta financeira cadastrada com a descrição: " + dados.descricao());
-        }
+        metaValidator.validarCriacao(dados, usuario);
         
         MetaFinanceira salva = repository.save(novaMeta);
         return converterParaDTO(salva);
@@ -70,6 +70,9 @@ public class MetaFinanceiraService {
         
         MetaFinanceira metaExistente = repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new RuntimeException("Meta não encontrada ou acesso negado."));
+
+        metaValidator.validarAtualizacao(metaExistente,dados,usuario);
+        
         
         metaExistente.setDescricao(dados.descricao());
         metaExistente.setValor_meta(dados.valorMeta());

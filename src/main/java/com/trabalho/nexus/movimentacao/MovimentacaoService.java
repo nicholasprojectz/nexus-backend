@@ -2,9 +2,10 @@ package com.trabalho.nexus.movimentacao;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.server.ResponseStatusException;
 import com.trabalho.nexus.usuario.Usuario;
 import com.trabalho.nexus.usuario.UsuarioRepository;
 import com.trabalho.nexus.metafinanceira.MetaFinanceiraRepository;
@@ -34,7 +35,7 @@ public class MovimentacaoService {
         Usuario usuario = getUsuarioLogado();
         
         Movimentacao mov = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Movimentação não encontrada ou acesso negado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
                 
         return converterParaDTO(mov);
     }
@@ -63,11 +64,11 @@ public class MovimentacaoService {
         novaMov.setUsuario(usuario);
         
         novaMov.setCategoria(categoriaRepository.findByIdAndUsuario(dados.idCategoria(), usuario)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada ou acesso negado.")));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Categoria não encontrada ou acesso negado.")));
 
         if (dados.idMeta() != null) {
             novaMov.setMetaFinanceira(metaRepository.findByIdAndUsuario(dados.idMeta(), usuario)
-                    .orElseThrow(() -> new RuntimeException("Meta financeira não encontrada ou acesso negado.")));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Meta financeira não encontrada ou acesso negado.")));
         }
 
         return converterParaDTO(repository.save(novaMov));
@@ -78,7 +79,7 @@ public class MovimentacaoService {
         Usuario usuario = getUsuarioLogado();
         
         Movimentacao movExistente = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Movimentação não encontrada ou acesso negado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
 
         movValidator.validarCriacao(dados, usuario);
         
@@ -88,11 +89,11 @@ public class MovimentacaoService {
         movExistente.setData_mov(dados.dataMov());
         
         movExistente.setCategoria(categoriaRepository.findByIdAndUsuario(dados.idCategoria(), usuario)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada ou acesso negado.")));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado.")));
 
         if (dados.idMeta() != null) {
             movExistente.setMetaFinanceira(metaRepository.findByIdAndUsuario(dados.idMeta(), usuario)
-                    .orElseThrow(() -> new RuntimeException("Meta financeira não encontrada ou acesso negado.")));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Meta financeira não encontrada ou acesso negado.")));
         } else {
             movExistente.setMetaFinanceira(null);
         }
@@ -105,7 +106,7 @@ public class MovimentacaoService {
         Usuario usuario = getUsuarioLogado();
         
         Movimentacao mov = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Movimentação não encontrada ou acesso negado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
                 
         repository.delete(mov);
     }
@@ -126,6 +127,6 @@ public class MovimentacaoService {
     private Usuario getUsuarioLogado() {
         String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioRepository.findByEmail(emailLogado)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado."));
     }
 }

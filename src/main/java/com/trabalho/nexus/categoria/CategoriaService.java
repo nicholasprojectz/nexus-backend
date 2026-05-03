@@ -97,6 +97,6 @@ public class CategoriaService {
     private Usuario getUsuarioLogado() {
         String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioRepository.findByEmail(emailLogado)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado."));
     }
 }

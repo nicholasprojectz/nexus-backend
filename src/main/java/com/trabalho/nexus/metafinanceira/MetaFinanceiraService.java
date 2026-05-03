@@ -31,7 +31,7 @@ public class MetaFinanceiraService {
         Usuario usuario = getUsuarioLogado();
         
         MetaFinanceira meta = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Meta não encontrada ou acesso negado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Meta não encontrada ou acesso negado."));
                 
         return converterParaDTO(meta);
     }
@@ -69,7 +69,7 @@ public class MetaFinanceiraService {
         Usuario usuario = getUsuarioLogado();
         
         MetaFinanceira metaExistente = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Meta não encontrada ou acesso negado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Meta não encontrada ou acesso negado."));
 
         metaValidator.validarAtualizacao(metaExistente,dados,usuario);
         
@@ -88,7 +88,7 @@ public class MetaFinanceiraService {
         Usuario usuario = getUsuarioLogado();
         
         MetaFinanceira meta = repository.findByIdAndUsuario(id, usuario)
-                .orElseThrow(() -> new RuntimeException("Meta não encontrada ou acesso negado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Meta não encontrada ou acesso negado."));
                 
         repository.delete(meta);
     }
@@ -107,6 +107,6 @@ public class MetaFinanceiraService {
     private Usuario getUsuarioLogado() {
         String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioRepository.findByEmail(emailLogado)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado."));
     }
 }

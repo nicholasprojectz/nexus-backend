@@ -1,9 +1,12 @@
 package com.trabalho.nexus.usuario;
 
 import com.trabalho.nexus.security.JwtService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
@@ -21,7 +24,7 @@ public class AuthService {
 
     public TokenResponseDTO registrar(RegisterRequestDTO data) {
         if (this.repository.findByEmail(data.email()).isPresent()) {
-            throw new RuntimeException("Usuário já existe");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário já existe");
         }
 
         // Criamos o utilizador e encriptamos a senha antes de guardar
@@ -39,14 +42,14 @@ public class AuthService {
     public TokenResponseDTO logar(LoginRequestDTO data) {
         // 1. Buscamos o usuário no banco pelo e-mail
         Usuario usuario = repository.findByEmail(data.email())
-                .orElseThrow(() -> new RuntimeException("Usuário ou senha inválidos"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário ou senha inválidos"));
 
         // 2. Comparamos a senha digitada com a hash do banco usando a ferramenta nativa
         boolean senhaCorreta = passwordEncoder.matches(data.senha(), usuario.getSenha());
 
         // 3. Se a senha não bater, bloqueamos o acesso
         if (!senhaCorreta) {
-            throw new RuntimeException("Usuário ou senha inválidos"); // Mensagem genérica por segurança
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário ou senha inválidos"); // Mensagem genérica por segurança
         }
 
         // 4. Se chegou aqui, está validado. Geramos o token.

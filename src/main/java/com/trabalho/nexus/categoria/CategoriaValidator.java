@@ -16,7 +16,7 @@ public class CategoriaValidator {
     }
 
     public void validarCriacao(CategoriaRequestDTO dados, Usuario usuario) {
-        if(dados.getDescricao().Lenght() <= 0){
+        if(dados.descricao().length() <= 0){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da categoria deve ter pelo menos 1 caractere.");
         }
         
@@ -26,7 +26,7 @@ public class CategoriaValidator {
     }
 
     public void validarAtualizacao(Categoria existente, CategoriaRequestDTO dados, Usuario usuario) {
-        if(dados.getDescricao().Lenght() <= 0){
+        if(dados.descricao().length() <= 0){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da categoria deve ter pelo menos 1 caractere.");
         }
 

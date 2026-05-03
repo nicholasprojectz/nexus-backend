@@ -11,12 +11,12 @@ public class MetaValidator {
     private final MetaFinanceiraRepository repo;
 
     // Injeção de dependência via construtor
-    public CategoriaValidator(MetaFinanceiraRepository repo) {
+    public MetaValidator(MetaFinanceiraRepository repo) {
         this.repo = repo;
     }
 
     public void validarCriacao(MetaFinanceiraRequestDTO dados, Usuario usuario) {
-        if(dados.getDescricao().Lenght() <= 0){
+        if(dados.descricao().length() <= 0){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da meta deve ter pelo menos 1 caractere.");
         }
         
@@ -24,17 +24,17 @@ public class MetaValidator {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Você já tem uma meta com este nome.");
         }
 
-        if(dados.dataInicial > dados.dataFinal){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
+        if (dados.dataInicial().isAfter(dados.dataFinal())) {
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
         }
 
-        if(dados.valor <= 0){
+        if(dados.valorMeta() <= 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor da meta deve ser maior que 0.");
         }
     }
 
     public void validarAtualizacao(MetaFinanceira existente, MetaFinanceiraRequestDTO dados, Usuario usuario) {
-        if(dados.getDescricao().Lenght() <= 0){
+        if(dados.descricao().length() <= 0){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da meta deve ter pelo menos 1 caractere.");
         }
 
@@ -43,11 +43,11 @@ public class MetaValidator {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Você já tem uma meta com este nome.");
         }
 
-        if(dados.dataInicial > dados.dataFinal){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
+        if (dados.dataInicial().isAfter(dados.dataFinal())) {
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
         }
 
-        if(dados.valor <= 0){
+        if(dados.valorMeta() <= 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor da meta deve ser maior que 0.");
         }
     }

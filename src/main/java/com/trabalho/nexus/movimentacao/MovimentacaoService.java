@@ -1,5 +1,6 @@
 package com.trabalho.nexus.movimentacao;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -109,6 +110,33 @@ public class MovimentacaoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
                 
         repository.delete(mov);
+    }
+    
+    public List<MovimentacaoResponseDTO> listarComFiltros(
+            Instant dataInicio, 
+            Instant dataFim, 
+            Double valorMin, 
+            Double valorMax, 
+            Long idCategoria, 
+            Long idMeta) {
+            
+        Usuario usuario = getUsuarioLogado();
+        
+        // Regra de Negócio: Se a data final não foi informada, travamos em "agora".
+        // Isso impede que contas cadastradas para o mês que vem apareçam no filtro atual.
+        if (dataFim == null) {
+            dataFim = Instant.now(); 
+        }
+        
+        // Se a dataInicio for null, deixamos null mesmo. A consulta JPQL vai ignorar 
+        // e trazer "desde sempre", exatamente como você pediu.
+
+        List<Movimentacao> movimentacoes = repository.buscarComFiltrosDinamicos(
+                usuario, dataInicio, dataFim, valorMin, valorMax, idCategoria, idMeta);
+        
+        return movimentacoes.stream()
+                .map(this::converterParaDTO)
+                .toList();
     }
 
     private MovimentacaoResponseDTO converterParaDTO(Movimentacao m) {

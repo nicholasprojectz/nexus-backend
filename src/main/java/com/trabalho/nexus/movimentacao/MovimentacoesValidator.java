@@ -8,13 +8,6 @@ import com.trabalho.nexus.usuario.Usuario;
 @Component
 public class MovimentacoesValidator {
 
-    private final MovimentacaoRepository repo;
-
-    // Injeção de dependência via construtor
-    public MovimentacoesValidator(MovimentacaoRepository repo) {
-        this.repo = repo;
-    }
-
     public void validarCriacao(MovimentacaoRequestDTO dados, Usuario usuario) {
 
         if(dados.idCategoria() == null && dados.idMeta() == null){

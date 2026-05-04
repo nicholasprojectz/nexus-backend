@@ -1,5 +1,6 @@
 package com.trabalho.nexus.movimentacao;
 
+import java.time.Instant;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,6 @@ public class MovimentacaoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.service.criar(data));
     }
 
-    @GetMapping
-    public ResponseEntity<List<MovimentacaoResponseDTO>> listarTodas() {
-        return ResponseEntity.ok(this.service.listarTodas());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<MovimentacaoResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(this.service.buscarPorId(id));
@@ -39,5 +35,19 @@ public class MovimentacaoController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         this.service.deletar(id);
         return ResponseEntity.noContent().build(); // Retorna 204
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<MovimentacaoResponseDTO>> buscarTodos(
+            @RequestParam(required = false) Instant dataInicio,
+            @RequestParam(required = false) Instant dataFim,
+            @RequestParam(required = false) Double valorMin,
+            @RequestParam(required = false) Double valorMax,
+            @RequestParam(required = false) Long idCategoria,
+            @RequestParam(required = false) Long idMeta
+    ) {
+        return ResponseEntity.ok(this.service.listarComFiltros(
+                dataInicio, dataFim, valorMin, valorMax, idCategoria, idMeta
+        ));
     }
 }

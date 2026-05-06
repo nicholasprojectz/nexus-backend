@@ -30,4 +30,7 @@ public interface MovimentacaoRepository extends JpaRepository<Movimentacao, Long
              @Param("idCategoria") Long idCategoria,
              @Param("idMeta") Long idMeta
      );
+    
+    @Query("SELECT COALESCE(SUM(m.valor), 0.0) FROM Movimentacao m WHERE m.metaFinanceira.id = :idMeta AND m.usuario = :usuario")
+    Long calcularSaldoDaMeta(@Param("idMeta") Long idMeta, @Param("usuario") Usuario usuario);
 }

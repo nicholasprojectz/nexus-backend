@@ -38,7 +38,7 @@ public class Movimentacao {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
     
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
     

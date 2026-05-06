@@ -1,5 +1,7 @@
 package com.trabalho.nexus.usuario;
 
+import com.trabalho.nexus.categoria.Categoria;
+import com.trabalho.nexus.categoria.CategoriaRepository;
 import com.trabalho.nexus.security.JwtService;
 
 import org.springframework.http.HttpStatus;
@@ -10,16 +12,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
-
+    private final CategoriaRepository catrepo;
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public AuthService(UsuarioRepository repository, PasswordEncoder passwordEncoder, 
-                       JwtService jwtService, AuthenticationManager authenticationManager) {
+                       JwtService jwtService, AuthenticationManager authenticationManager, CategoriaRepository catrepo) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.catrepo = catrepo;
     }
 
     public TokenResponseDTO registrar(RegisterRequestDTO data) {
@@ -35,6 +38,11 @@ public class AuthService {
 
         this.repository.save(novoUsuario);
 
+        Categoria categoriaMeta = new Categoria();
+        categoriaMeta.setDescricao("Meta Financeira");
+        categoriaMeta.setUsuario(novoUsuario); 
+        catrepo.save(categoriaMeta);
+        
         String token = jwtService.generateToken(novoUsuario.getEmail(), "ROLE_USER");
         return new TokenResponseDTO(token, novoUsuario.getNome());
     }

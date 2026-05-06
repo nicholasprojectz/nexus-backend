@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.trabalho.nexus.movimentacao.MovimentacaoRepository;
 import com.trabalho.nexus.usuario.Usuario;
 import com.trabalho.nexus.usuario.UsuarioRepository;
 
@@ -18,12 +19,14 @@ public class MetaFinanceiraService {
     private final MetaFinanceiraRepository repository;
     private final UsuarioRepository usuarioRepository;
     private final MetaValidator metaValidator;
+    private final MovimentacaoRepository movimentacaoRepository; 
     
     public MetaFinanceiraService(MetaFinanceiraRepository repository, UsuarioRepository usuarioRepository,
-    MetaValidator val) {
+    MetaValidator val, MovimentacaoRepository movimentacaoRepository) {
     	this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.metaValidator = val;
+        this.movimentacaoRepository = movimentacaoRepository;
     }
 
     
@@ -94,10 +97,13 @@ public class MetaFinanceiraService {
     }
 
     private MetaFinanceiraResponseDTO converterParaDTO(MetaFinanceira meta) {
+    	
+    	Long saldoAtual = movimentacaoRepository.calcularSaldoDaMeta(meta.getId(), getUsuarioLogado());
         return new MetaFinanceiraResponseDTO(
             meta.getId(),
             meta.getDescricao(),
             meta.getValor_meta(), 
+            saldoAtual,
             meta.getData_inicial(),
             meta.getData_final(),
             meta.getUsuario().getId()

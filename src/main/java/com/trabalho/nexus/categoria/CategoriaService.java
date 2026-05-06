@@ -65,6 +65,10 @@ public class CategoriaService {
         
         Categoria categoriaExistente = repo.findByIdAndUsuario(id, usuario)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
+        
+        if (categoriaExistente.getDescricao().equalsIgnoreCase("Meta Financeira")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A categoria 'Meta Financeira' é padrão do sistema e não pode ser renomeada.");
+        }
 
         // Repassa o usuário, a entidade antiga e os dados novos para a validação
         validator.validarAtualizacao(categoriaExistente, dados, usuario);
@@ -82,6 +86,10 @@ public class CategoriaService {
         
         Categoria categoria = repo.findByIdAndUsuario(id, usuario)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
+        
+        if (categoria.getDescricao().equalsIgnoreCase("Meta Financeira")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A categoria 'Meta Financeira' é padrão do sistema e não pode ser excluída.");
+        }
 
         repo.delete(categoria);
     }

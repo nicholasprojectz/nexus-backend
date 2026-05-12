@@ -26,13 +26,23 @@ public class MetaFinanceira {
 	@Column(nullable = false)
 	private Long valor_meta;
 	
+	@Column(name = "data_inicial", nullable = false)
+    private Instant dataInicial;
 
-	@Column(nullable = false)
-    private Instant data_inicial;
-
-	@Column(nullable = false)
-    private Instant data_final;
+    @Column(name = "data_final", nullable = false)
+    private Instant dataFinal;
 	
+	@Column(nullable = false, length = 1)
+    private Character status = 'A';
+	
+	public Character getStatus() {
+		return status;
+	}
+
+	public void setStatus(Character status) {
+		this.status = status;
+	}
+
 	@ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
@@ -43,8 +53,8 @@ public class MetaFinanceira {
 		super();
 		this.descricao = descricao;
 		this.valor_meta = valor_meta;
-		this.data_inicial = data_inicial;
-		this.data_final = data_final;
+		this.dataInicial = data_inicial;
+		this.dataFinal = data_final;
 		this.usuario = usuario;
 	}
 
@@ -65,19 +75,19 @@ public class MetaFinanceira {
 	}
 
 	public Instant getData_inicial() {
-		return data_inicial;
+		return dataInicial;
 	}
 
 	public void setData_inicial(Instant data_inicial) {
-		this.data_inicial = data_inicial;
+		this.dataInicial = data_inicial;
 	}
 
 	public Instant getData_final() {
-		return data_final;
+		return dataFinal;
 	}
 
 	public void setData_final(Instant data_final) {
-		this.data_final = data_final;
+		this.dataFinal = data_final;
 	}
 
 	public Usuario getUsuario() {

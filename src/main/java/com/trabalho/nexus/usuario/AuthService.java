@@ -2,6 +2,7 @@ package com.trabalho.nexus.usuario;
 
 import com.trabalho.nexus.categoria.Categoria;
 import com.trabalho.nexus.categoria.CategoriaRepository;
+import com.trabalho.nexus.metafinanceira.MetaFinanceiraService;
 import com.trabalho.nexus.security.JwtService;
 
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,16 @@ public class AuthService {
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
+    private final MetaFinanceiraService metaFinanceiraService;
+    
+    
     public AuthService(UsuarioRepository repository, PasswordEncoder passwordEncoder, 
-                       JwtService jwtService, AuthenticationManager authenticationManager, CategoriaRepository catrepo) {
+                       JwtService jwtService, AuthenticationManager authenticationManager, CategoriaRepository catrepo, MetaFinanceiraService metaFinanceiraService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.catrepo = catrepo;
+        this.metaFinanceiraService = metaFinanceiraService;
     }
 
     public TokenResponseDTO registrar(RegisterRequestDTO data) {
@@ -59,7 +63,8 @@ public class AuthService {
         if (!senhaCorreta) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário ou senha inválidos"); // Mensagem genérica por segurança
         }
-
+        
+        metaFinanceiraService.processarMetasVencidas(usuario);
         // 4. Se chegou aqui, está validado. Geramos o token.
         String token = jwtService.generateToken(usuario.getEmail(), "ROLE_USER");
         return new TokenResponseDTO(token, usuario.getNome());

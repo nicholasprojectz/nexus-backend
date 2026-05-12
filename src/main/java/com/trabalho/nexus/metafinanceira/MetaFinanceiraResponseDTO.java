@@ -6,7 +6,7 @@ public record MetaFinanceiraResponseDTO (
 	    Long id,
 	    String descricao,
 	    Long valorMeta, 
-	    Long saldo, 
+	    Double saldo, 
 	    Instant dataInicial, 
 	    Instant dataFinal, 
 	    Long usuarioId 

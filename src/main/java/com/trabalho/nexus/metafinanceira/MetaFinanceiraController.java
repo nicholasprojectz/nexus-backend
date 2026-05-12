@@ -50,4 +50,9 @@ public class MetaFinanceiraController {
         this.metaService.deletar(id);
         return ResponseEntity.noContent().build(); 
     }
+    @PostMapping("/{id}/resgatar")
+    public ResponseEntity<Void> resgatarMeta(@PathVariable Long id) {
+    	metaService.resgatarMetaManualmente(id);
+        return ResponseEntity.noContent().build(); 
+    }
 }

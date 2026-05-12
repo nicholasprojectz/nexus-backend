@@ -1,5 +1,6 @@
 package com.trabalho.nexus.metafinanceira;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,10 @@ public interface MetaFinanceiraRepository extends JpaRepository<MetaFinanceira, 
     Optional<MetaFinanceira> findByIdAndUsuario(Long id, Usuario usuario);
     
     boolean existsByUsuarioAndDescricao(Usuario usuario, String descricao);
+    
+    List<MetaFinanceira> findByUsuarioAndStatusAndDataFinalLessThanEqual(
+            Usuario usuario, 
+            Character status, 
+            Instant agora
+        );
 }

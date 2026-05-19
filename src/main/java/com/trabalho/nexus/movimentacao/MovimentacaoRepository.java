@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.trabalho.nexus.metafinanceira.MetaFinanceira;
 import com.trabalho.nexus.usuario.Usuario;
 
 public interface MovimentacaoRepository extends JpaRepository<Movimentacao, Long> {
@@ -33,4 +34,5 @@ public interface MovimentacaoRepository extends JpaRepository<Movimentacao, Long
     
     @Query("SELECT COALESCE(SUM(m.valor), 0.0) FROM Movimentacao m WHERE m.metaFinanceira.id = :idMeta AND m.usuario = :usuario")
     Double calcularSaldoDaMeta(@Param("idMeta") Long idMeta, @Param("usuario") Usuario usuario);
+	boolean existsByMetaFinanceira(MetaFinanceira existente);
 }

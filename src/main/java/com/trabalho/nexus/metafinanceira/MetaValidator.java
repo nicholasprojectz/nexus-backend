@@ -4,19 +4,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import com.trabalho.nexus.usuario.Usuario;
+import com.trabalho.nexus.movimentacao.MovimentacaoRepository;
 
 @Component
 public class MetaValidator {
 
     private final MetaFinanceiraRepository repo;
+    private final MovimentacaoRepository movimentacaoRepository;
 
-    // Injeção de dependência via construtor
-    public MetaValidator(MetaFinanceiraRepository repo) {
+    // Injeção de dependência via construtor de ambos os repositórios
+    public MetaValidator(MetaFinanceiraRepository repo, MovimentacaoRepository movimentacaoRepository) {
         this.repo = repo;
+        this.movimentacaoRepository = movimentacaoRepository;
     }
 
     public void validarCriacao(MetaFinanceiraRequestDTO dados, Usuario usuario) {
-        if(dados.descricao().length() <= 0){
+        if(dados.descricao().trim().isEmpty()){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da meta deve ter pelo menos 1 caractere.");
         }
         
@@ -25,7 +28,7 @@ public class MetaValidator {
         }
 
         if (dados.dataInicial().isAfter(dados.dataFinal())) {
-        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
         }
 
         if(dados.valorMeta() <= 0){
@@ -34,7 +37,11 @@ public class MetaValidator {
     }
 
     public void validarAtualizacao(MetaFinanceira existente, MetaFinanceiraRequestDTO dados, Usuario usuario) {
-        if(dados.descricao().length() <= 0){
+        if (existente.getStatus() == 'C') {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível alterar uma meta concluída.");
+        }
+
+        if(dados.descricao().trim().isEmpty()){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da meta deve ter pelo menos 1 caractere.");
         }
 
@@ -44,11 +51,23 @@ public class MetaValidator {
         }
 
         if (dados.dataInicial().isAfter(dados.dataFinal())) {
-        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data inicial deve ser menor ou igual que a data final.");
         }
 
         if(dados.valorMeta() <= 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor da meta deve ser maior que 0.");
+        }
+    }
+
+    public void validarExclusao(MetaFinanceira existente) {
+        // REGRA: Impede a exclusão de uma meta concluída/resgatada
+        if (existente.getStatus() == 'C') {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível deletar uma meta concluída.");
+        }
+
+        boolean possuiMovimentacoes = movimentacaoRepository.existsByMetaFinanceira(existente);
+        if (possuiMovimentacoes) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível deletar uma meta que possui movimentações bancárias.");
         }
     }
 }

@@ -82,7 +82,8 @@ public class MovimentacaoService {
         Movimentacao movExistente = repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
 
-        movValidator.validarCriacao(dados, usuario);
+        // ---> CORREÇÃO: Substituído validarCriacao por validarAtualizacao
+        movValidator.validarAtualizacao(movExistente, dados, usuario);
         
         movExistente.setDescricao(dados.descricao());
         movExistente.setValor(dados.valor());
@@ -109,6 +110,8 @@ public class MovimentacaoService {
         Movimentacao mov = repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
                 
+        movValidator.validarExclusao(mov);
+                
         repository.delete(mov);
     }
     
@@ -122,15 +125,10 @@ public class MovimentacaoService {
             
         Usuario usuario = getUsuarioLogado();
         
-        // Regra de Negócio: Se a data final não foi informada, travamos em "agora".
-        // Isso impede que contas cadastradas para o mês que vem apareçam no filtro atual.
         if (dataFim == null) {
             dataFim = Instant.now(); 
         }
         
-        // Se a dataInicio for null, deixamos null mesmo. A consulta JPQL vai ignorar 
-        // e trazer "desde sempre", exatamente como você pediu.
-
         List<Movimentacao> movimentacoes = repository.buscarComFiltrosDinamicos(
                 usuario, dataInicio, dataFim, valorMin, valorMax, idCategoria, idMeta);
         

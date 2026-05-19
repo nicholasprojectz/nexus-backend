@@ -19,7 +19,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class MetaFinanceiraService {
-	
+    
     private final MetaFinanceiraRepository repository;
     private final UsuarioRepository usuarioRepository;
     private final MetaValidator metaValidator;
@@ -29,7 +29,7 @@ public class MetaFinanceiraService {
     
     public MetaFinanceiraService(MetaFinanceiraRepository repository, UsuarioRepository usuarioRepository,
     MetaValidator val, MovimentacaoRepository movimentacaoRepository, CategoriaRepository categoriaRepository) {
-    	this.repository = repository;
+        this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.metaValidator = val;
         this.movimentacaoRepository = movimentacaoRepository;
@@ -60,6 +60,8 @@ public class MetaFinanceiraService {
     public MetaFinanceiraResponseDTO criar(MetaFinanceiraRequestDTO dados) {
         Usuario usuario = getUsuarioLogado();
 
+        metaValidator.validarCriacao(dados, usuario);
+        
         MetaFinanceira novaMeta = new MetaFinanceira();
         novaMeta.setDescricao(dados.descricao());
         novaMeta.setValor_meta(dados.valorMeta());
@@ -67,8 +69,6 @@ public class MetaFinanceiraService {
         novaMeta.setData_final(dados.dataFinal());
         novaMeta.setUsuario(usuario);
 
-        metaValidator.validarCriacao(dados, usuario);
-        
         MetaFinanceira salva = repository.save(novaMeta);
         return converterParaDTO(salva);
     }
@@ -81,8 +81,7 @@ public class MetaFinanceiraService {
         MetaFinanceira metaExistente = repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Meta não encontrada ou acesso negado."));
 
-        metaValidator.validarAtualizacao(metaExistente,dados,usuario);
-        
+        metaValidator.validarAtualizacao(metaExistente, dados, usuario);
         
         metaExistente.setDescricao(dados.descricao());
         metaExistente.setValor_meta(dados.valorMeta());
@@ -93,6 +92,7 @@ public class MetaFinanceiraService {
         
         return converterParaDTO(metaAtualizada);
     }
+
     @Transactional
     public void deletar(Long id) {
         Usuario usuario = getUsuarioLogado();
@@ -100,12 +100,13 @@ public class MetaFinanceiraService {
         MetaFinanceira meta = repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Meta não encontrada ou acesso negado."));
                 
+        metaValidator.validarExclusao(meta);
+        
         repository.delete(meta);
     }
 
     private MetaFinanceiraResponseDTO converterParaDTO(MetaFinanceira meta) {
-    	
-    	Double saldoAtual = movimentacaoRepository.calcularSaldoDaMeta(meta.getId(), getUsuarioLogado());
+        Double saldoAtual = movimentacaoRepository.calcularSaldoDaMeta(meta.getId(), getUsuarioLogado());
         return new MetaFinanceiraResponseDTO(
             meta.getId(),
             meta.getDescricao(),
@@ -118,14 +119,11 @@ public class MetaFinanceiraService {
     }
     
     private void efetuarResgate(MetaFinanceira meta, Usuario usuario, Instant agora) {
-        // Calcula o saldo
         Double saldoResgate = movimentacaoRepository.calcularSaldoDaMeta(meta.getId(), usuario);
 
-        // Busca a categoria padrão
         Categoria categoriaMeta = categoriaRepository.findByDescricaoAndUsuario("Meta Financeira", usuario)
                 .orElseThrow(() -> new RuntimeException("Categoria do sistema não encontrada"));
 
-        // Cria a movimentação de entrada
         Movimentacao resgate = new Movimentacao();
         resgate.setDescricao("Resgate de Meta: " + meta.getDescricao());
         resgate.setValor(saldoResgate);
@@ -144,7 +142,7 @@ public class MetaFinanceiraService {
     
     @Transactional
     public void resgatarMetaManualmente(Long idMeta) {
-        Usuario usuario = getUsuarioLogado(); // Seu método que pega o usuário do SecurityContext
+        Usuario usuario = getUsuarioLogado(); 
         
         MetaFinanceira meta = repository.findByIdAndUsuario(idMeta, usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Meta não encontrada ou acesso negado."));
@@ -153,16 +151,16 @@ public class MetaFinanceiraService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Esta meta já foi resgatada ou concluída.");
         }
 
-        efetuarResgate(meta, usuario, Instant.now()); // Chama o motor privado
+        efetuarResgate(meta, usuario, Instant.now()); 
     }
     
     @Transactional
     public void processarMetasVencidas(Usuario usuario) {
-    	Instant agora = Instant.now();
+        Instant agora = Instant.now();
         List<MetaFinanceira> metasVencidas = repository.findByUsuarioAndStatusAndDataFinalLessThanEqual(usuario, 'A', agora);
 
         for (MetaFinanceira meta : metasVencidas) {
-            efetuarResgate(meta, usuario, agora); // Chama o motor privado
+            efetuarResgate(meta, usuario, agora); 
         }
     }
 

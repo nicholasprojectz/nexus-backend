@@ -47,7 +47,7 @@ public class MovimentacoesValidator {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível vincular movimentações a uma meta concluída.");
             }
 
-            if (dados.tipo() == 1) {
+            if (dados.tipo() == 0) {
                 Double saldoAtual = movimentacaoRepository.calcularSaldoDaMeta(meta.getId(), usuario);
                 if (saldoAtual - dados.valor() < 0) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo insuficiente na meta para realizar este saque.");

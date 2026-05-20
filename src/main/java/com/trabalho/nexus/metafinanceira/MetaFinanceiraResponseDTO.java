@@ -9,5 +9,6 @@ public record MetaFinanceiraResponseDTO (
 	    Double saldo, 
 	    Instant dataInicial, 
 	    Instant dataFinal, 
-	    Long usuarioId 
+	    Long usuarioId,
+	    Character status
 	) {}

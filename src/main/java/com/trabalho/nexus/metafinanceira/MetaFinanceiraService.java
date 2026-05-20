@@ -114,7 +114,8 @@ public class MetaFinanceiraService {
             saldoAtual,
             meta.getData_inicial(),
             meta.getData_final(),
-            meta.getUsuario().getId()
+            meta.getUsuario().getId(),
+            meta.getStatus()
         );
     }
     

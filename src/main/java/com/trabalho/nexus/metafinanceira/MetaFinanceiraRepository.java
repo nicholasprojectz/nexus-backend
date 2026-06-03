@@ -21,4 +21,7 @@ public interface MetaFinanceiraRepository extends JpaRepository<MetaFinanceira, 
             Character status, 
             Instant agora
         );
+
+
+	List<MetaFinanceira> findByUsuarioAndStatus(Usuario usuario, char c);
 }

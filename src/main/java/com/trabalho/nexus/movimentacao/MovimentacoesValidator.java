@@ -60,11 +60,17 @@ public class MovimentacoesValidator {
         if (existente.getMetaFinanceira() != null && existente.getMetaFinanceira().getStatus() == 'C') {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível alterar uma movimentação de uma meta concluída.");
         }
+        if (existente.getIsAutomatico()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Não é possível alterar lançamentos automáticos do sistema (Rendimentos).");
+        }
 
         validarCriacao(dados, usuario);
     }
 
     public void validarExclusao(Movimentacao existente) {
+    	if (existente.getIsAutomatico()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Não é possível excluir lançamentos automáticos do sistema (Rendimentos).");
+        }
         if (existente.getMetaFinanceira() != null && existente.getMetaFinanceira().getStatus() == 'C') {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível excluir uma movimentação de uma meta concluída.");
         }

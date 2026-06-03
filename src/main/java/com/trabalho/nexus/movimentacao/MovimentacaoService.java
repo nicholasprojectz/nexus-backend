@@ -146,7 +146,8 @@ public class MovimentacaoService {
             m.getData_mov(),
             m.getUsuario().getId(),
             m.getCategoria() != null ? m.getCategoria().getId() : null,
-            m.getMetaFinanceira() != null ? m.getMetaFinanceira().getId() : null
+            m.getMetaFinanceira() != null ? m.getMetaFinanceira().getId() : null,
+            m.getIsAutomatico() 
         );
     }
 

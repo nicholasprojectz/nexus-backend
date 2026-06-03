@@ -19,6 +19,16 @@ public class MetaValidator {
     }
 
     public void validarCriacao(MetaFinanceiraRequestDTO dados, Usuario usuario) {
+    	
+    	if ("RENDA_FIXA_CDI".equals(dados.tipoInvestimento())) {
+            if ( dados.percentualRendimento() <= 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Para investimentos em CDI, informe um percentual válido (ex: 100).");
+            }
+        } else {
+            if (dados.percentualRendimento() > 0) {
+                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Metas sem investimento não devem possuir percentual de rendimento.");
+            }
+        }
         if(dados.descricao().trim().isEmpty()){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A descrição da meta deve ter pelo menos 1 caractere.");
         }
@@ -37,6 +47,15 @@ public class MetaValidator {
     }
 
     public void validarAtualizacao(MetaFinanceira existente, MetaFinanceiraRequestDTO dados, Usuario usuario) {
+    	if ("RENDA_FIXA_CDI".equals(dados.tipoInvestimento())) {
+            if (dados.percentualRendimento() <= 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Para investimentos em CDI, informe um percentual válido (ex: 100).");
+            }
+        } else {
+            if ( dados.percentualRendimento() > 0) {
+                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Metas sem investimento não devem possuir percentual de rendimento.");
+            }
+        }
         if (existente.getStatus() == 'C') {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível alterar uma meta concluída.");
         }

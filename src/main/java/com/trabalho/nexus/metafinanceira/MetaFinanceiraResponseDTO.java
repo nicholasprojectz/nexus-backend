@@ -10,5 +10,8 @@ public record MetaFinanceiraResponseDTO (
 	    Instant dataInicial, 
 	    Instant dataFinal, 
 	    Long usuarioId,
-	    Character status
+	    Character status,
+	    double percentualRendimento,
+	    
+	    String tipoInvestimento
 	) {}

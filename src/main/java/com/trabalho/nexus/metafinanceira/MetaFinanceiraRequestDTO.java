@@ -10,5 +10,9 @@ public record MetaFinanceiraRequestDTO (
 
 	    Instant dataInicial, 
 
-	    Instant dataFinal
+	    Instant dataFinal,
+	    
+	    double percentualRendimento,
+	    
+	    String tipoInvestimento
 	) {}

@@ -20,6 +20,58 @@ public class MetaFinanceira {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	
+	public double getPercentualRendimento() {
+		return percentualRendimento;
+	}
+
+	public void setPercentualRendimento(double percentualRendimento) {
+		this.percentualRendimento = percentualRendimento;
+	}
+
+	public String getTipoInvestimento() {
+		return tipoInvestimento;
+	}
+
+	public void setTipoInvestimento(String tipoInvestimento) {
+		this.tipoInvestimento = tipoInvestimento;
+	}
+
+	public MetaFinanceira(Long id, double percentualRendimento, String tipoInvestimento, String descricao,
+			Long valor_meta, Instant dataInicial, Instant dataFinal, Character status, Usuario usuario) {
+		super();
+		this.id = id;
+		this.percentualRendimento = percentualRendimento;
+		this.tipoInvestimento = tipoInvestimento;
+		this.descricao = descricao;
+		this.valor_meta = valor_meta;
+		this.dataInicial = dataInicial;
+		this.dataFinal = dataFinal;
+		this.status = status;
+		this.usuario = usuario;
+	}
+
+	public Instant getDataInicial() {
+		return dataInicial;
+	}
+
+	public void setDataInicial(Instant dataInicial) {
+		this.dataInicial = dataInicial;
+	}
+
+	public Instant getDataFinal() {
+		return dataFinal;
+	}
+
+	public void setDataFinal(Instant dataFinal) {
+		this.dataFinal = dataFinal;
+	}
+
+	private double percentualRendimento;
+	
+	@Column(nullable = false)
+	private String tipoInvestimento;	
+	
 	@Column(nullable = false)
 	private String descricao;
 	
@@ -48,15 +100,6 @@ public class MetaFinanceira {
     private Usuario usuario;
 	
 	public MetaFinanceira() {}
-
-	public MetaFinanceira(String descricao, Long valor_meta, Instant data_inicial, Instant data_final, Usuario usuario) {
-		super();
-		this.descricao = descricao;
-		this.valor_meta = valor_meta;
-		this.dataInicial = data_inicial;
-		this.dataFinal = data_final;
-		this.usuario = usuario;
-	}
 
 	public String getDescricao() {
 		return descricao;

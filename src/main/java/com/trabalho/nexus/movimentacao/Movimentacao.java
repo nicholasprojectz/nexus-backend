@@ -45,10 +45,21 @@ public class Movimentacao {
     @ManyToOne
     @JoinColumn(name = "id_meta")
     private MetaFinanceira metaFinanceira;
+    
+    @Column(name = "is_automatico")
+    private Boolean isAutomatico = false;
 
-    public Movimentacao() {}
+    public Boolean getIsAutomatico() {
+		return isAutomatico;
+	}
 
-    public Movimentacao(String descricao, Double valor, Integer tipo, Instant data_mov, Usuario usuario, Categoria categoria, MetaFinanceira metaFinanceira) {
+	public void setIsAutomatico(Boolean isAutomatico) {
+		this.isAutomatico = isAutomatico;
+	}
+
+	public Movimentacao() {}
+
+    public Movimentacao(String descricao, Double valor, Integer tipo, Instant data_mov, Usuario usuario, Categoria categoria, MetaFinanceira metaFinanceira, Boolean isAutomatico) {
         this.descricao = descricao;
         this.valor = valor;
         this.tipo = tipo;
@@ -56,6 +67,8 @@ public class Movimentacao {
         this.usuario = usuario;
         this.categoria = categoria;
         this.metaFinanceira = metaFinanceira;
+		this.isAutomatico = isAutomatico;
+
     }
 
     public Long getId() { 

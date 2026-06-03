@@ -10,5 +10,6 @@ public record MovimentacaoResponseDTO(
     Instant dataMov,
     Long idUsuario,
     Long idCategoria,
-    Long idMeta
+    Long idMeta,
+    Boolean getIsAutomatico
 ) {}

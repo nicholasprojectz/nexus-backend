@@ -36,4 +36,7 @@ public interface MovimentacaoRepository extends JpaRepository<Movimentacao, Long
             "FROM Movimentacao m WHERE m.metaFinanceira.id = :idMeta AND m.usuario = :usuario")
      Double calcularSaldoDaMeta(@Param("idMeta") Long idMeta, @Param("usuario") Usuario usuario);
 	boolean existsByMetaFinanceira(MetaFinanceira existente);
+	
+	@Query("SELECT MAX(m.data_mov) FROM Movimentacao m WHERE m.metaFinanceira.id = :idMeta AND m.descricao LIKE 'Rendimento%'")
+	Optional<Instant> buscarDataUltimoRendimento(@Param("idMeta") Long idMeta);
 }

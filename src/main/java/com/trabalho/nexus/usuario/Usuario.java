@@ -67,38 +67,37 @@ public class Usuario implements UserDetails{
 	
 		@Override
 		public Collection<? extends GrantedAuthority> getAuthorities() {
-			// Define uma permissão padrão. Em sistemas complexos, isso viria de uma tabela de Cargos/Roles.
 			return List.of(new SimpleGrantedAuthority("ROLE_USER"));
 		}
 
 		@Override
 		public String getPassword() {
-			return this.senha; // O Spring precisa saber de onde puxar a senha
+			return this.senha; 
 		}
 
 		@Override
 		public String getUsername() {
-			return this.email; // O Spring precisa saber qual campo é o identificador único (login)
+			return this.email; 
 		}
 
 		@Override
 		public boolean isAccountNonExpired() {
-			return true; // Conta não expira
+			return true; 
 		}
 
 		@Override
 		public boolean isAccountNonLocked() {
-			return true; // Conta não está bloqueada
+			return true; 
 		}
 
 		@Override
 		public boolean isCredentialsNonExpired() {
-			return true; // Senha não expira
+			return true; 
 		}
 
 		@Override
 		public boolean isEnabled() {
-			return true; // Conta está ativa
+			return true; 
 		}
 	
 }

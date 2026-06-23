@@ -16,13 +16,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> lidarComResponseStatusException(
             ResponseStatusException ex, 
-            HttpServletRequest request) { // Injetamos a requisição para pegar o path
+            HttpServletRequest request) { 
         
-        // Usamos LinkedHashMap para garantir que a ordem dos campos no JSON seja mantida
         Map<String, Object> resposta = new LinkedHashMap<>();
         resposta.put("timestamp", Instant.now().toString());
         resposta.put("status", ex.getStatusCode().value());
-        resposta.put("erro", ex.getReason()); // Aqui vai a sua mensagem customizada
+        resposta.put("erro", ex.getReason()); 
         resposta.put("path", request.getRequestURI());
 
         return ResponseEntity.status(ex.getStatusCode()).body(resposta);

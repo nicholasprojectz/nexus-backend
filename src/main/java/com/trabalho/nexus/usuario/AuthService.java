@@ -34,7 +34,6 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário já existe");
         }
 
-        // Criamos o utilizador e encriptamos a senha antes de guardar
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(data.nome());
         novoUsuario.setEmail(data.email());
@@ -52,20 +51,16 @@ public class AuthService {
     }
 
     public TokenResponseDTO logar(LoginRequestDTO data) {
-        // 1. Buscamos o usuário no banco pelo e-mail
         Usuario usuario = repository.findByEmail(data.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário ou senha inválidos"));
 
-        // 2. Comparamos a senha digitada com a hash do banco usando a ferramenta nativa
         boolean senhaCorreta = passwordEncoder.matches(data.senha(), usuario.getSenha());
 
-        // 3. Se a senha não bater, bloqueamos o acesso
         if (!senhaCorreta) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário ou senha inválidos"); // Mensagem genérica por segurança
         }
-        
+        metaFinanceiraService.processarRendimentos(usuario);
         metaFinanceiraService.processarMetasVencidas(usuario);
-        // 4. Se chegou aqui, está validado. Geramos o token.
         String token = jwtService.generateToken(usuario.getEmail(), "ROLE_USER");
         return new TokenResponseDTO(token, usuario.getNome());
     }

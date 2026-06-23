@@ -12,7 +12,6 @@ public class MetaValidator {
     private final MetaFinanceiraRepository repo;
     private final MovimentacaoRepository movimentacaoRepository;
 
-    // Injeção de dependência via construtor de ambos os repositórios
     public MetaValidator(MetaFinanceiraRepository repo, MovimentacaoRepository movimentacaoRepository) {
         this.repo = repo;
         this.movimentacaoRepository = movimentacaoRepository;

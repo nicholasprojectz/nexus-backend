@@ -140,7 +140,7 @@ public class MetaFinanceiraService {
         Movimentacao resgate = new Movimentacao();
         resgate.setDescricao("Resgate de Meta: " + meta.getDescricao());
         resgate.setValor(saldoResgate);
-        resgate.setTipo(0); // Entrada
+        resgate.setTipo(0);
         resgate.setData_mov(agora);
         resgate.setUsuario(usuario);
         resgate.setCategoria(categoriaMeta);
@@ -148,7 +148,6 @@ public class MetaFinanceiraService {
         
         movimentacaoRepository.save(resgate);
 
-        // Conclui a meta
         meta.setStatus('C');
         repository.save(meta);
     }
@@ -213,9 +212,8 @@ public class MetaFinanceiraService {
 
         	for (MetaFinanceira meta : metasAtivas) {
             
-            // ---> A NOVA TRAVA: Pula a meta se não for do tipo CDI
             if (meta.getTipoInvestimento() == null || !"RENDA_FIXA_CDI".equals(meta.getTipoInvestimento())) {
-                continue; // Vai para a próxima meta do laço
+                continue; 
             }
 
             Instant dataReferencia = movimentacaoRepository.buscarDataUltimoRendimento(meta.getId())
@@ -242,7 +240,6 @@ public class MetaFinanceiraService {
 
                 Movimentacao rendimento = new Movimentacao();
                 
-                // Atualizamos a descrição para ser bem transparente no extrato
                 rendimento.setDescricao(String.format("Rendimento %s%% CDI", meta.getPercentualRendimento()));
                 rendimento.setValor(valorRendimento);
                 rendimento.setTipo(1); 

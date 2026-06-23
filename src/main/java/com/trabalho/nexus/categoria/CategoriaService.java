@@ -16,7 +16,7 @@ public class CategoriaService {
 
     private final CategoriaRepository repo;
     private final UsuarioRepository usuarioRepository;
-    private final CategoriaValidator validator; // Injetando o validador
+    private final CategoriaValidator validator; 
 
     public CategoriaService(CategoriaRepository repo, UsuarioRepository usuarioRepository, CategoriaValidator validator) {
         this.repo = repo;
@@ -25,7 +25,7 @@ public class CategoriaService {
     }
     
     public CategoriaResponseDTO buscarPorId(Long id) {
-        Usuario usuario = getUsuarioLogado(); // Busca o usuário apenas na hora da requisição
+        Usuario usuario = getUsuarioLogado(); 
         
         Categoria cat = repo.findByIdAndUsuario(id, usuario)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada ou acesso negado."));
@@ -47,7 +47,6 @@ public class CategoriaService {
     public CategoriaResponseDTO criar(CategoriaRequestDTO dados) {
         Usuario usuario = getUsuarioLogado(); 
 
-        // Repassa o usuário e os dados para a validação
         validator.validarCriacao(dados, usuario);
 
         Categoria novaCategoria = new Categoria();
@@ -70,7 +69,6 @@ public class CategoriaService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A categoria 'Meta Financeira' é padrão do sistema e não pode ser renomeada.");
         }
 
-        // Repassa o usuário, a entidade antiga e os dados novos para a validação
         validator.validarAtualizacao(categoriaExistente, dados, usuario);
 
         categoriaExistente.setDescricao(dados.descricao());

@@ -20,7 +20,46 @@ public class MetaFinanceira {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(nullable = false)
+	private String tipoInvestimento;	
 	
+	@Column(nullable = false)
+	private String descricao;
+	
+	@Column(nullable = false)
+    private Double valor_meta;
+	
+	@Column(name = "data_inicial", nullable = false)
+    private Instant dataInicial;
+
+    @Column(name = "data_final", nullable = false)
+    private Instant dataFinal;
+	
+	@Column(nullable = false, length = 1)
+    private Character status = 'A';
+	
+	@ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+	
+	private double percentualRendimento;
+	
+	public MetaFinanceira() {}
+	
+	public MetaFinanceira(Long id, double percentualRendimento, String tipoInvestimento, String descricao,
+			Double valor_meta, Instant dataInicial, Instant dataFinal, Character status, Usuario usuario) {
+		super();
+		this.id = id;
+		this.percentualRendimento = percentualRendimento;
+		this.tipoInvestimento = tipoInvestimento;
+		this.descricao = descricao;
+		this.valor_meta = valor_meta;
+		this.dataInicial = dataInicial;
+		this.dataFinal = dataFinal;
+		this.status = status;
+		this.usuario = usuario;
+	}
+
 	public double getPercentualRendimento() {
 		return percentualRendimento;
 	}
@@ -37,19 +76,6 @@ public class MetaFinanceira {
 		this.tipoInvestimento = tipoInvestimento;
 	}
 
-	public MetaFinanceira(Long id, double percentualRendimento, String tipoInvestimento, String descricao,
-			Long valor_meta, Instant dataInicial, Instant dataFinal, Character status, Usuario usuario) {
-		super();
-		this.id = id;
-		this.percentualRendimento = percentualRendimento;
-		this.tipoInvestimento = tipoInvestimento;
-		this.descricao = descricao;
-		this.valor_meta = valor_meta;
-		this.dataInicial = dataInicial;
-		this.dataFinal = dataFinal;
-		this.status = status;
-		this.usuario = usuario;
-	}
 
 	public Instant getDataInicial() {
 		return dataInicial;
@@ -67,26 +93,6 @@ public class MetaFinanceira {
 		this.dataFinal = dataFinal;
 	}
 
-	private double percentualRendimento;
-	
-	@Column(nullable = false)
-	private String tipoInvestimento;	
-	
-	@Column(nullable = false)
-	private String descricao;
-	
-	@Column(nullable = false)
-	private Long valor_meta;
-	
-	@Column(name = "data_inicial", nullable = false)
-    private Instant dataInicial;
-
-    @Column(name = "data_final", nullable = false)
-    private Instant dataFinal;
-	
-	@Column(nullable = false, length = 1)
-    private Character status = 'A';
-	
 	public Character getStatus() {
 		return status;
 	}
@@ -94,12 +100,6 @@ public class MetaFinanceira {
 	public void setStatus(Character status) {
 		this.status = status;
 	}
-
-	@ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-	
-	public MetaFinanceira() {}
 
 	public String getDescricao() {
 		return descricao;
@@ -109,11 +109,11 @@ public class MetaFinanceira {
 		this.descricao = descricao;
 	}
 
-	public Long getValor_meta() {
+	public Double getValor_meta() {
 		return valor_meta;
 	}
 
-	public void setValor_meta(Long valor_meta) {
+	public void setValor_meta(Double valor_meta) {
 		this.valor_meta = valor_meta;
 	}
 

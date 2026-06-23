@@ -48,16 +48,8 @@ public class Movimentacao {
     
     @Column(name = "is_automatico")
     private Boolean isAutomatico = false;
-
-    public Boolean getIsAutomatico() {
-		return isAutomatico;
-	}
-
-	public void setIsAutomatico(Boolean isAutomatico) {
-		this.isAutomatico = isAutomatico;
-	}
-
-	public Movimentacao() {}
+    
+    public Movimentacao() {}
 
     public Movimentacao(String descricao, Double valor, Integer tipo, Instant data_mov, Usuario usuario, Categoria categoria, MetaFinanceira metaFinanceira, Boolean isAutomatico) {
         this.descricao = descricao;
@@ -70,6 +62,14 @@ public class Movimentacao {
 		this.isAutomatico = isAutomatico;
 
     }
+
+    public Boolean getIsAutomatico() {
+		return isAutomatico;
+	}
+
+	public void setIsAutomatico(Boolean isAutomatico) {
+		this.isAutomatico = isAutomatico;
+	}
 
     public Long getId() { 
         return id; 

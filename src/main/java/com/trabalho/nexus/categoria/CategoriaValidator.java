@@ -10,7 +10,6 @@ public class CategoriaValidator {
 
     private final CategoriaRepository repo;
 
-    // Injeção de dependência via construtor
     public CategoriaValidator(CategoriaRepository repo) {
         this.repo = repo;
     }

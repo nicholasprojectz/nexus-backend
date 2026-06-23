@@ -3,16 +3,10 @@ package com.trabalho.nexus.metafinanceira;
 import java.time.Instant;
 
 public record MetaFinanceiraRequestDTO (
-	    
 	    String descricao,
-	 
-	    Long valorMeta, 
-
-	    Instant dataInicial, 
-
+	    Double valorMeta,
+	    Instant dataInicial,
 	    Instant dataFinal,
-	    
 	    double percentualRendimento,
-	    
 	    String tipoInvestimento
 	) {}

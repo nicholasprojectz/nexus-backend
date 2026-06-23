@@ -12,11 +12,9 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // Em Spring Boot 3 / JJWT 0.11+, a chave DEVE ter no mínimo 256 bits (32 caracteres).
     private static final String SECRET = "3454353454543453fsfadsfawq54qr2FASdFSADFARFASFASDF4241412452RGEHR";
-    private static final long EXPIRATION_TIME = 86400000; // 1 dia em milissegundos
+    private static final long EXPIRATION_TIME = 86400000; 
 
-    // Converte a string em uma chave criptográfica forte
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }

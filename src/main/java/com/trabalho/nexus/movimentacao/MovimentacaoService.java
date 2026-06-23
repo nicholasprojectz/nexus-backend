@@ -82,7 +82,6 @@ public class MovimentacaoService {
         Movimentacao movExistente = repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Movimentação não encontrada ou acesso negado."));
 
-        // ---> CORREÇÃO: Substituído validarCriacao por validarAtualizacao
         movValidator.validarAtualizacao(movExistente, dados, usuario);
         
         movExistente.setDescricao(dados.descricao());

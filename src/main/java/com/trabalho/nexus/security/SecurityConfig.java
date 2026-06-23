@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // Permite usar anotações como @PreAuthorize nos Controllers
+@EnableMethodSecurity 
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -30,15 +30,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // No Spring Boot 3, a sintaxe lambda (->) é obrigatória para configurações
             .csrf(csrf -> csrf.disable()) 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/error").permitAll() // URL de login fica pública// URL de login fica pública
-                .anyRequest().authenticated() // Qualquer outra URL exige token válido
+                .requestMatchers("/error").permitAll() 
+                .anyRequest().authenticated() 
             )
-            // Adiciona o filtro JWT criado antes do filtro padrão do Spring
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); 
 
         return http.build();
@@ -55,9 +53,7 @@ public class SecurityConfig {
     }
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        // Diz ao provedor como buscar o usuário no banco
         provider.setUserDetailsService(userDetailsService);
-        // Diz ao provedor qual algoritmo usar para comparar a senha
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
